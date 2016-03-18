@@ -1,0 +1,97 @@
+<HTML>
+<HEAD>
+<TITLE>Connect via SSH</title>
+<HTA:APPLICATION
+ApplicationName="SSH.hta"
+SingleInstance="No"
+WindowsState="normal"
+Scroll="No"
+Navigable="Yes"
+MaximizeButton="Yes"
+SysMenu="Yes"
+Caption="Yes"
+></HEAD>
+
+<SCRIPT LANGUAGE="VBScript">
+
+Sub Window_Onload
+'# Size Window
+sHorizontal = 700
+sVertical = 220
+Window.resizeTo sHorizontal, sVertical
+'# Get Monitor Details
+Set objWMIService = GetObject _
+("winmgmts:root\cimv2")
+intHorizontal = sHorizontal *2
+intVertical = sVertical *2
+Set colItems = objWMIService.ExecQuery( _
+"Select ScreenWidth, ScreenHeight from" _
+& " Win32_DesktopMonitor", , 48)
+For Each objItem In colItems
+sWidth= objItem.ScreenWidth
+sHeight = objItem.ScreenHeight
+If sWidth > sHorizontal _
+then intHorizontal = sWidth
+If sHeight > sVertical _
+then intVertical = sHeight
+Next
+Set objWMIService = Nothing
+'# Center window on the screen
+intLeft = (intHorizontal - sHorizontal) /2
+intTop = (intVertical - sVertical) /2
+Window.moveTo intLeft, intTop
+'# default window content
+window.location.href="#Top"
+End Sub
+
+
+Sub RunScript
+on Error Resume Next
+
+strScan1 = Scan1.Value
+
+strCommand = "C:\VulnerabilitesAnalyzer\Common\Report.exe " & strScan1 & " " & strScan2
+
+Dim objShell, objCmdExec
+Set objShell = CreateObject("WScript.Shell")
+Set objCmdExec = objshell.exec(strCommand)
+getCommandOutput = objCmdExec.StdOut.ReadAll
+Set objShell = Nothing
+
+Self.Close()
+End Sub
+
+
+Sub CancelScript
+Set oShell = Nothing
+Set objNetwork = Nothing
+Self.Close()
+End Sub
+
+</SCRIPT>
+
+
+<BODY STYLE="font:14 pt arial; color:black; filterrogidXImageTransform.Microsoft.Gradient( GradientType=1, StartColorStr='#000000', EndColorStr='#0000FF')">
+<a name="Top"></a><CENTER>
+<table border="0" cellpadding="2" cellspacing="2"><font size="2" color="black" face="Arial">
+<tr>
+<td height="30">
+<p>IP Address: </p>
+</td>
+<td height="30">&nbsp;&nbsp; <input type="text" name="IPAddress" size="30"></td></tr>
+<tr>
+<td height="30">
+<p>Admin User: </p>
+</td>
+<td height="30">&nbsp;&nbsp; <input type="text" name="UserName" size="30"></td></tr>
+<tr>
+<td height="30">
+<p>Password: </p>
+</td>
+<td height="30">&nbsp;&nbsp; <input type="password" name="PasswordArea" size="30"></td></tr>
+</table><BR>
+<HR color="#0000FF">
+<Input id=runbutton class="button" type="button" value=" Add " name="run_button" onClick="RunScript">
+&nbsp;&nbsp;&nbsp;
+<Input id=runbutton class="button" type="button" value=" Cancel " name="cancel_button" onClick="CancelScript">
+</CENTER>
